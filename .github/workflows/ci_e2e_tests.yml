@@ -2,7 +2,6 @@
 name: Python Pytest CI
 
 # Déclencheur : Quand ce workflow doit-il s'exécuter ?
-# Il s'exécutera à chaque push et à chaque Pull Request sur la branche main.
 on:
   push:
     branches: [ main ]
@@ -10,38 +9,33 @@ on:
     branches: [ main ]
 
 jobs:
-  # Définition du job de test
   build:
-    runs-on: ubuntu-latest # Utilise un serveur Linux (appelé "Runner")
+    runs-on: ubuntu-latest # Utilise un serveur Linux standard
 
     steps:
     # 1. Checkout: Récupérer le code du dépôt
     - uses: actions/checkout@v4
-
+    
     # 2. Setup Python: Configurer l'environnement Python
     - name: Set up Python 3.9
       uses: actions/setup-python@v5
       with:
         python-version: '3.9'
-
+    
     # 3. Install Dependencies: Installer les librairies listées dans requirements.txt
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-
-    # 4. Install Chrome & Chromedriver: Installer le navigateur Chrome et le driver
-    - name: Install Chrome and Chromedriver
-      run: |
-        sudo apt-get update
-        sudo apt-get install google-chrome-stable -y
         
-        # Télécharger et installer manuellement le chromedriver pour la CI
-        LATEST_CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d '.' -f 1)
-        sudo wget -N https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$(curl -s https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_$(google-chrome --version | grep -oP '(\d+)\.' | head -1 | sed 's/\.$//'))/linux64/chromedriver-linux64.zip
-        sudo unzip chromedriver-linux64.zip
-        sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
-        sudo chmod +x /usr/local/bin/chromedriver
+    # 4. Install Chrome: Installer le navigateur Chrome sur le serveur Ubuntu
+    - name: Install Google Chrome Stable
+      uses: browser-actions/setup-chrome@latest
+        
+    # 5. Run Pytest: Exécuter le test Headless
+    - name: Run Pytest Tests (Headless)
+      run: |
+        pytest
 
     # 5. Run Pytest: Exécuter le test Headless
     - name: Run Pytest Tests (Headless)
