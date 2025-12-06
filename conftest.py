@@ -1,7 +1,7 @@
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
+# from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 import time
 
@@ -35,7 +35,7 @@ def driver():
 
     # 3. Création du driver avec toutes les options configurées
     driver = webdriver.Chrome(
-        service=ChromeService(ChromeDriverManager().install()),
+        # service=ChromeService(ChromeDriverManager().install()),
         options=chrome_options
     )
 

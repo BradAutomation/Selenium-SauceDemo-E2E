@@ -30,14 +30,21 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    # 4. Install Chrome: Installer le navigateur Chrome sur le serveur Ubuntu
-    # C'est nécessaire car Chrome n'est pas toujours préinstallé
-    - name: Install Chrome
+    # 4. Install Chrome & Chromedriver: Installer le navigateur Chrome et le driver
+    - name: Install Chrome and Chromedriver
       run: |
         sudo apt-get update
         sudo apt-get install google-chrome-stable -y
+        
+        # Télécharger et installer manuellement le chromedriver pour la CI
+        LATEST_CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d '.' -f 1)
+        sudo wget -N https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$(curl -s https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_$(google-chrome --version | grep -oP '(\d+)\.' | head -1 | sed 's/\.$//'))/linux64/chromedriver-linux64.zip
+        sudo unzip chromedriver-linux64.zip
+        sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
+        sudo chmod +x /usr/local/bin/chromedriver
 
     # 5. Run Pytest: Exécuter le test Headless
     - name: Run Pytest Tests (Headless)
       run: |
         pytest
+
