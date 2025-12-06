@@ -1,0 +1,9 @@
+# Ignorer l'environnement virtuel Python
+.venv/
+# Ignorer les caches Python et PyCharm
+__pycache__/
+.pytest_cache/
+.idea/
+# Ignorer les rapports de test
+htmlcov/
+*.log
