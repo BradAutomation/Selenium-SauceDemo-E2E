@@ -1,45 +1,5 @@
 from selenium.webdriver.common.by import By
 
-
-class LoginPage:
-    # 1. Définir l'URL et les SÉLECTEURS de la page
-    URL = "https://the-internet.herokuapp.com/login"
-
-    # Utilisation de variables statiques pour les sélecteurs (meilleure pratique)
-    USERNAME_INPUT = (By.ID, "username")
-    PASSWORD_INPUT = (By.ID, "password")
-    LOGIN_BUTTON = (By.CSS_SELECTOR, ".fa.fa-2x.fa-sign-in")
-    SUCCESS_MESSAGE = (By.CSS_SELECTOR, ".flash")
-
-    # 2. Le constructeur de la classe
-    # Il reçoit l'objet 'driver' de la fixture Pytest
-    def __init__(self, driver):
-        self.driver = driver
-
-    # 3. Les MÉTHODES d'interaction (ce que l'utilisateur fait)
-
-    def load(self):
-        """Charge la page de connexion."""
-        self.driver.get(self.URL)
-
-    def login(self, username, password):
-        """Exécute la séquence complète de connexion."""
-
-        # Trouver les éléments en utilisant les sélecteurs définis en haut
-        username_field = self.driver.find_element(*self.USERNAME_INPUT)
-        password_field = self.driver.find_element(*self.PASSWORD_INPUT)
-        login_button = self.driver.find_element(*self.LOGIN_BUTTON)
-
-        # Interagir
-        username_field.send_keys(username)
-        password_field.send_keys(password)
-        login_button.click()
-
-    def get_success_message_text(self):
-        """Récupère le texte du message de succès après la connexion."""
-        success_element = self.driver.find_element(*self.SUCCESS_MESSAGE)
-        return success_element.text
-
 ###############################################
 ###############################################
 ###############################################
