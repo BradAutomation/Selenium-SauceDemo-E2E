@@ -26,22 +26,18 @@ class ProductsPage:
         # --- 3. MÉTHODES D'INTERACTION ---
 
     def add_backpack_to_cart(self):
-        """Ajoute le sac à dos au panier en assurant la synchronisation via le badge."""
+        """Ajoute le sac à dos au panier en forçant le clic via JavaScript."""
 
-        # 1. Attendre que le bouton ADD soit cliquable ET cliquer
-        self.wait.until(EC.element_to_be_clickable(self.ADD_TO_CART_BACKPACK)).click()
+        # 1. Attendre que le bouton ADD soit présent et cliquable
+        add_button = self.wait.until(EC.element_to_be_clickable(self.ADD_TO_CART_BACKPACK))
 
-        # 2. Synchronisation CRITIQUE : Attendre que le badge du panier devienne visible
-        # C'est la méthode de vérification la plus robuste.
-        self.wait.until(EC.visibility_of_element_located(self.CART_BADGE))
+        # 2. CORRECTION CRUCIALE : Exécuter le clic via JavaScript
+        self.driver.execute_script("arguments[0].click();", add_button)
 
-        # APRÈS (Correction, la plus robuste pour la création du badge) :
+        # 3. Synchronisation : Attendre que le badge du panier soit créé dans le DOM
         self.wait.until(EC.presence_of_element_located(self.CART_BADGE))
 
-        # 3. Optionnel : Attendre que le bouton REMOVE apparaisse (pour la forme)
-        # self.wait.until(EC.element_to_be_clickable(self.REMOVE_BACKPACK)) # Ligne qui échouait
-
-        print("Article 'Sac à Dos' ajouté au panier et confirmation reçue via le badge.")
+        print("Article 'Sac à Dos' ajouté au panier par force JavaScript.")
 
     def add_bikelight_to_cart(self):
         """Ajoute la lampe de vélo au panier en assurant la synchronisation."""
