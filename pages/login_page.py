@@ -1,11 +1,6 @@
 from selenium.webdriver.common.by import By
 
-###############################################
-###############################################
-###############################################
-###############################################
-
-class SauceLoginPage:
+class LoginPage:
     URL = "https://www.saucedemo.com/"
 
     # Sélecteurs (vérifiez ces ID avec l'Inspecteur!)

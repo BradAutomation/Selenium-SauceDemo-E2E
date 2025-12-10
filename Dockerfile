@@ -1,26 +1,30 @@
-# 1. Image de base : Utiliser l'image officielle Python avec la bonne version (3.9)
-FROM python:3.9-slim
+# 1. Image de base : Utiliser une image de Selenium qui a Chrome et toutes les dépendances
+# Cela évite de déboguer l'installation de Chrome et de toutes ses dépendances.
+# Nous utilisons l'image Chrome stable, basée sur Python 3.9
+FROM selenium/standalone-chrome:latest
 
-# 2. Définir le répertoire de travail à l'intérieur du conteneur
+# 2. Définir le répertoire de travail
 WORKDIR /app
 
-# 3. Installer Google Chrome et les outils nécessaires
-# Cette partie simule l'installation de Chrome sur le serveur Linux
-RUN apt-get update && apt-get install -y \
-    wget \
-    gnupg \
-    unzip \
-    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list' \
-    && apt-get update \
-    && apt-get install -y google-chrome-stable
+# 3. Installer Python
+# Nous devons devenir root pour pouvoir utiliser apt-get
+USER root
+RUN apt-get update && apt-get install -y python3 python3-pip
+
+# Revenir à l'utilisateur par défaut (souvent 'seluser') pour des raisons de sécurité
+# Nous devons le faire car les étapes suivantes doivent fonctionner sous cet utilisateur
+USER seluser
 
 # 4. Copier les dépendances Python et les installer
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 
-# 5. Copier le reste du projet (tests, pages, conftest, etc.) dans le conteneur
+# 5. Copier le reste du projet (tests, pages, conftest, etc.)
 COPY . .
 
-# 6. Commande par défaut : Définir la commande qui sera exécutée par défaut au démarrage du conteneur
-CMD ["pytest", "--headless"]
+# NOUVEAU : Corriger les permissions d'écriture pour l'utilisateur non-root (seluser)
+# seluser est l'utilisateur par défaut dans l'image Selenium
+RUN chown -R seluser:seluser /app
+
+# 6. Commande par défaut : Lancer Pytest.
+CMD ["pytest"]
