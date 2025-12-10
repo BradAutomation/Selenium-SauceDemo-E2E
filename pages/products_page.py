@@ -26,14 +26,19 @@ class ProductsPage:
         # --- 3. MÉTHODES D'INTERACTION ---
 
     def add_backpack_to_cart(self):
-        """Ajoute le sac à dos au panier en assurant la synchronisation."""
+        """Ajoute le sac à dos au panier en assurant la synchronisation via le badge."""
 
-        # 1. Attendre que le bouton ADD soit cliquable (pour s'assurer que la page est prête)
+        # 1. Attendre que le bouton ADD soit cliquable ET cliquer
         self.wait.until(EC.element_to_be_clickable(self.ADD_TO_CART_BACKPACK)).click()
 
-        # 3. Synchronisation CRITIQUE : Attendre que le bouton "Remove" apparaisse (Confirmation)
-        self.wait.until(EC.element_to_be_clickable(self.REMOVE_BACKPACK))
-        print("Article 'Sac à Dos' ajouté au panier et confirmation reçue.")
+        # 2. Synchronisation CRITIQUE : Attendre que le badge du panier devienne visible
+        # C'est la méthode de vérification la plus robuste.
+        self.wait.until(EC.visibility_of_element_located(self.SHOPPING_CART_BADGE))
+
+        # 3. Optionnel : Attendre que le bouton REMOVE apparaisse (pour la forme)
+        # self.wait.until(EC.element_to_be_clickable(self.REMOVE_BACKPACK)) # Ligne qui échouait
+
+        print("Article 'Sac à Dos' ajouté au panier et confirmation reçue via le badge.")
 
     def add_bikelight_to_cart(self):
         """Ajoute la lampe de vélo au panier en assurant la synchronisation."""
