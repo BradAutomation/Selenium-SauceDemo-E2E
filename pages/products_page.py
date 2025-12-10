@@ -35,6 +35,9 @@ class ProductsPage:
         # C'est la méthode de vérification la plus robuste.
         self.wait.until(EC.visibility_of_element_located(self.CART_BADGE))
 
+        # APRÈS (Correction, la plus robuste pour la création du badge) :
+        self.wait.until(EC.presence_of_element_located(self.CART_BADGE))
+
         # 3. Optionnel : Attendre que le bouton REMOVE apparaisse (pour la forme)
         # self.wait.until(EC.element_to_be_clickable(self.REMOVE_BACKPACK)) # Ligne qui échouait
 
