@@ -1,10 +1,9 @@
 import pytest
-from pages.login_page import LoginPage  # Importer la classe Page Object
+from pages.login_page import LoginPage  # Utilise la classe LoginPage corrigée
 
-# Les identifiants de démo pour la connexion réussie
-VALID_USERNAME = "tomsmith"
-VALID_PASSWORD = "SuperSecretPassword!"
-
+# Les identifiants de démo pour Sauce Demo
+VALID_USERNAME = "standard_user"
+VALID_PASSWORD = "secret_sauce"
 
 # Le driver est toujours fourni par la fixture 'driver' dans conftest.py
 def test_login_success_pom(driver):
@@ -17,16 +16,14 @@ def test_login_success_pom(driver):
 
     # 3. ASSERTION : Valider le résultat (le cœur du test)
 
-    # Récupérer le message de succès via la Page Object
-    success_text = login_page.get_success_message_text()
+    # Valider la redirection vers la page d'inventaire
+    assert driver.current_url == "https://www.saucedemo.com/inventory.html"
 
-    # Valider le texte du message
-    assert "You logged into a secure area!" in success_text
+    # Vérifier un élément sur la page de succès (par exemple, le titre 'Products')
+    # Vous devrez ajouter une méthode dans login_page.py pour valider un élément
+    # Pour l'instant, on se contente de l'URL pour la simplicité du test.
 
-    # Valider la redirection (URL)
-    assert driver.current_url == "https://the-internet.herokuapp.com/secure"
-
-    print("\n[POM Test] Connexion réussie et message validé.")
+    print("\n[POM Test] Connexion Sauce Demo réussie (via URL).")
 
 
 def test_login_failure_pom(driver):
@@ -34,11 +31,11 @@ def test_login_failure_pom(driver):
 
     # Actions avec identifiants incorrects
     login_page.load()
-    login_page.login("invalid_user", "wrong_password")
+    login_page.login("locked_out_user", VALID_PASSWORD) # locked_out_user échoue la connexion
 
-    # Assertion : vérifier l'échec (le message contient "Your username is invalid")
-    failure_text = login_page.get_success_message_text()  # Le sélecteur .flash fonctionne aussi pour l'échec
+    # Assertion : vérifier l'échec
+    failure_text = login_page.get_error_message() # Cette méthode est déjà dans votre PO
 
-    assert "Your username is invalid!" in failure_text
-    print("\n[POM Test] Échec de connexion validé.")
+    assert "Epic sadface: Sorry, this user has been locked out." in failure_text
+    print("\n[POM Test] Échec de connexion Sauce Demo validé.")
 
