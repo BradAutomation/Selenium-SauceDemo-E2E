@@ -29,13 +29,10 @@ class ProductsPage:
         """Ajoute le sac à dos au panier en assurant la synchronisation."""
 
         # 1. Attendre que le bouton ADD soit cliquable (pour s'assurer que la page est prête)
-        self.wait.until(EC.element_to_be_clickable(self.ADD_TO_CART_BACKPACK))
-
-        # 2. Clique sur le bouton "Add to Cart"
-        self.driver.find_element(*self.ADD_TO_CART_BACKPACK).click()
+        self.wait.until(EC.element_to_be_clickable(self.ADD_TO_CART_BACKPACK)).click()
 
         # 3. Synchronisation CRITIQUE : Attendre que le bouton "Remove" apparaisse (Confirmation)
-        self.wait.until(EC.visibility_of_element_located(self.REMOVE_BACKPACK))
+        self.wait.until(EC.element_to_be_clickable(self.REMOVE_BACKPACK))
         print("Article 'Sac à Dos' ajouté au panier et confirmation reçue.")
 
     def add_bikelight_to_cart(self):
