@@ -33,7 +33,7 @@ class ProductsPage:
 
         # 2. Synchronisation CRITIQUE : Attendre que le badge du panier devienne visible
         # C'est la méthode de vérification la plus robuste.
-        self.wait.until(EC.visibility_of_element_located(self.SHOPPING_CART_BADGE))
+        self.wait.until(EC.visibility_of_element_located(self.CART_BADGE))
 
         # 3. Optionnel : Attendre que le bouton REMOVE apparaisse (pour la forme)
         # self.wait.until(EC.element_to_be_clickable(self.REMOVE_BACKPACK)) # Ligne qui échouait
