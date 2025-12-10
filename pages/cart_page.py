@@ -1,4 +1,5 @@
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 class CartPage:
@@ -12,13 +13,20 @@ class CartPage:
     # Nom du premier produit (pour la vérification)
     BACKPACK_ITEM_NAME = (By.ID, "item_4_title_link")
 
+    # Sélecteur d'un élément crucial sur la page du panier (ex: le titre)
+    TITLE = (By.CLASS_NAME, "title")
+
     def __init__(self, driver):
+        self.wait = WebDriverWait(driver, 10)
         self.driver = driver
 
     # Méthodes d'interaction
 
     def get_number_of_items(self):
         """Compte le nombre total d'articles affichés dans le panier."""
+
+        # Attente critique : s'assurer que la page a chargé son contenu
+        self.wait.until(EC.visibility_of_element_located(self.TITLE))
         # find_elements (au pluriel) retourne une liste d'éléments.
         return len(self.driver.find_elements(*self.CART_ITEMS))
 
