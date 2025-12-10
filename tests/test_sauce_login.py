@@ -1,5 +1,5 @@
 import pytest
-from pages.login_page import SauceLoginPage
+from pages.login_page import LoginPage
 from pages.products_page import ProductsPage
 from pages.cart_page import CartPage
 from pages.checkout_page import CheckoutPage  # NOUVEAU
@@ -11,7 +11,7 @@ VALID_PASSWORD = "secret_sauce"
 def test_complete_purchase_path(driver):  # Renommons la fonction pour refléter le parcours complet
 
     # Initialisation de TOUTES les Pages Objects nécessaires
-    login_page = SauceLoginPage(driver)
+    login_page = LoginPage(driver)
     products_page = ProductsPage(driver)
     cart_page = CartPage(driver)
     checkout_page = CheckoutPage(driver)  # NOUVEAU

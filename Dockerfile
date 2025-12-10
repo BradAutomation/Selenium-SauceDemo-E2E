@@ -22,9 +22,16 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 # 5. Copier le reste du projet (tests, pages, conftest, etc.)
 COPY . .
 
-# NOUVEAU : Corriger les permissions d'écriture pour l'utilisateur non-root (seluser)
-# seluser est l'utilisateur par défaut dans l'image Selenium
-RUN chown -R seluser:seluser /app
+# NOUVEAU : Récupérer le nom de l'utilisateur par défaut (souvent 'seluser' ou 'chrome')
+# Pour changer le propriétaire des fichiers, nous devons revenir en root
+USER root
+
+# CORRECTION : Changer les permissions pour que l'utilisateur non-root par défaut (ID 1000)
+# puisse écrire dans le dossier /app/. Cela contourne l'erreur `seluser` inconnu.
+RUN chown -R 1000:1000 /app
+
+# Revenir à l'utilisateur non-root (celui qui exécute Chrome/Selenium) pour des raisons de sécurité
+USER 1000
 
 # 6. Commande par défaut : Lancer Pytest.
 CMD ["pytest"]

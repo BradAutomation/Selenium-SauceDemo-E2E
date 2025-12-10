@@ -40,7 +40,7 @@ def driver():
     )
 
     # Attente implicite globale
-    driver.implicitly_wait(10)
+    driver.implicitly_wait(20)
 
     # Le 'yield' renvoie l'objet driver au test
     yield driver
