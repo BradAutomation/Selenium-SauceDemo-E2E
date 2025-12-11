@@ -6,47 +6,61 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 class CartPage:
-    # Sélecteurs
-    # Liste des articles dans le panier (utilise un sélecteur CSS générique)
-    CART_ITEMS = (By.CSS_SELECTOR, ".cart_item")
+    """
+    Page Object Model pour la page du Panier (Cart Page)
+    """
 
-    # Bouton pour démarrer le processus de paiement
-    CHECKOUT_BUTTON = (By.ID, "checkout")
+    # --- SÉLECTEURS ---
 
-    # Nom du premier produit (pour la vérification)
-    BACKPACK_ITEM_NAME = (By.ID, "item_4_title_link")
+    # SÉLECTEUR CORRIGÉ pour compter les articles :
+    # Le conteneur de chaque article dans le panier sur le site Sauce Demo
+    CART_ITEM_CONTAINER = (By.CLASS_NAME, 'cart_item')
 
-    # Sélecteur d'un élément crucial sur la page du panier (ex: le titre)
-    TITLE = (By.CLASS_NAME, "title")
+    # Bouton pour Checkout
+    CHECKOUT_BUTTON = (By.ID, 'checkout')
+
+    # Élément de l'article spécifique (pour vérification)
+    BACKPACK_ITEM_NAME = (By.XPATH, "//div[@class='inventory_item_name' and text()='Sauce Labs Backpack']")
+
+    # --- CONSTRUCTEUR ---
 
     def __init__(self, driver):
-        self.wait = WebDriverWait(driver, 10)
         self.driver = driver
 
-    # Méthodes d'interaction
-
-    def get_number_of_items(self):
-        """Compte le nombre total d'articles affichés dans le panier."""
-
-        # Attente 1 : s'assurer que la page a chargé son contenu (le titre)
-        self.wait.until(EC.visibility_of_element_located(self.TITLE))
-
-        # NOUVEAU : Attente 2 : Attendre qu'au moins un élément du panier soit présent 
-        # Cela corrige l'erreur de dénombrement si le DOM est lent à charger.
-        self.wait.until(EC.presence_of_element_located(self.CART_ITEMS))
-
-        # find_elements (au pluriel) retourne une liste d'éléments.
-        return len(self.driver.find_elements(*self.CART_ITEMS))
+    # --- ACTIONS ---
 
     def is_backpack_present(self):
-        """Vérifie si le sac à dos est listé dans le panier."""
-        # On peut simplement vérifier si l'élément spécifique est présent
+        """
+        Vérifie si le sac à dos est listé dans le panier.
+        """
         try:
+            # On peut simplement vérifier si l'élément spécifique est présent
             self.driver.find_element(*self.BACKPACK_ITEM_NAME)
             return True
         except:
             return False
 
+    def get_number_of_items(self):
+        """
+        Retourne le nombre d'articles actuellement visibles dans le panier.
+        """
+        # Attendre que les éléments du panier soient présents avant de les compter
+        try:
+            WebDriverWait(self.driver, 10).until(
+                EC.presence_of_all_elements_located(self.CART_ITEM_CONTAINER)
+            )
+
+            # Compter tous les conteneurs d'articles trouvés
+            items = self.driver.find_elements(*self.CART_ITEM_CONTAINER)
+            print(f"DEBUG: {len(items)} articles trouvés dans le panier.")
+            return len(items)
+
+        except:
+            # Si l'attente échoue, il est probable qu'il n'y ait aucun article
+            return 0
+
     def go_to_checkout(self):
-        """Clique sur le bouton Checkout pour passer aux informations."""
+        """
+        Clique sur le bouton Checkout pour passer aux informations.
+        """
         self.driver.find_element(*self.CHECKOUT_BUTTON).click()
