@@ -31,8 +31,9 @@ jobs:
       # Étape 4: Exécuter les tests Pytest DANS le conteneur
       - name: Run Dockerized Pytest and generate Allure data
         run: |
-          # Utiliser l'UID de l'utilisateur du runner pour écrire dans le volume monté.
-          docker run --user $(id -u):$(id -g) \
+          # Retrait du --user qui cause des conflits avec les permissions internes du driver.
+          # Exécution standard.
+          docker run \
             -v ${{ github.workspace }}/allure-results:/app/allure-results \
             e2e-tests-image \
             pytest --alluredir=allure-results
