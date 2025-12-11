@@ -25,14 +25,17 @@ jobs:
 
       # Étape 3: Construire l'Image Docker
       - name: Build Docker Image
-        # Ceci utilise votre Dockerfile à la racine du projet
         run: docker build -t e2e-tests-image .
+
+      # NOUVELLE ÉTAPE 3b: Préparer le volume de résultats avec des permissions d'écriture maximales
+      - name: Prepare Allure Results Directory
+        run: |
+          mkdir -p allure-results
+          chmod 777 allure-results # Rend le dossier accessible en écriture par tout le monde (conteneur/hôte)
 
       # Étape 4: Exécuter les tests Pytest DANS le conteneur
       - name: Run Dockerized Pytest and generate Allure data
         run: |
-          # Retrait du --user qui cause des conflits avec les permissions internes du driver.
-          # Exécution standard.
           docker run \
             -v ${{ github.workspace }}/allure-results:/app/allure-results \
             e2e-tests-image \
