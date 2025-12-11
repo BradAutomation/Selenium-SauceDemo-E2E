@@ -51,7 +51,7 @@ def driver():
     # nous spécifions explicitement le chemin du binaire ChromeDriver.
     # Assurez-vous que '/usr/bin/chromedriver' est le bon chemin dans votre image Docker.
     try:
-        chrome_service = Service(executable_path='/usr/bin/chromedriver')
+        chrome_service = Service(executable_path='/usr/local/bin/chromedriver')
 
         driver = webdriver.Chrome(
             service=chrome_service,
