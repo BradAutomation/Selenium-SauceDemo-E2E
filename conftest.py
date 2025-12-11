@@ -1,3 +1,5 @@
+# conftest.py
+
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -20,6 +22,7 @@ def driver():
     chrome_options.add_argument("--headless=new")
 
     # 1.2. Arguments CRITIQUES pour les conteneurs Linux et les environnements CI
+    # Ces arguments sont CRUCIAUX pour le bon fonctionnement dans un conteneur restreint.
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--user-data-dir=/tmp/chrome-user-data")
@@ -37,12 +40,11 @@ def driver():
     }
     chrome_options.add_experimental_option("prefs", prefs)
 
-    # NOUVEAU : Spécifier explicitement le chemin du navigateur Chrome (l'exécutable)
-    # C'est souvent la clé si le driver démarre mais l'instance Chrome s'éteint immédiatement.
-    # Si vous utilisez Chromium, remplacez '/usr/bin/google-chrome' par '/usr/bin/chromium'
+    # CORRECTION FINALE : Chemin absolu du navigateur Chrome
+    # Nous avons confirmé que le binaire est ici :
     chrome_options.binary_location = '/opt/google/chrome/google-chrome'
 
-    # --- 2. CRÉATION DU DRIVER (Chemin confirmé) ---
+    # --- 2. CRÉATION DU DRIVER (Chemins confirmés) ---
 
     try:
         # CHEMIN CONFIRMÉ POUR LE DRIVER
@@ -55,7 +57,7 @@ def driver():
 
     except Exception as e:
         print(f"Erreur lors de l'initialisation du driver: {e}")
-        print("Vérifiez l'alignement des versions Chrome/Driver et le chemin de binary_location.")
+        print("ACTION REQUISE : Vérifiez que 'docker run' utilise l'option '--ulimit nofile=32768'.")
         raise
 
     # Configuration initiale du driver

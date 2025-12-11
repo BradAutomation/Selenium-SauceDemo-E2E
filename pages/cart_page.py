@@ -1,3 +1,5 @@
+# pages/cart_page.py
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -26,8 +28,13 @@ class CartPage:
     def get_number_of_items(self):
         """Compte le nombre total d'articles affichés dans le panier."""
 
-        # Attente critique : s'assurer que la page a chargé son contenu
+        # Attente 1 : s'assurer que la page a chargé son contenu (le titre)
         self.wait.until(EC.visibility_of_element_located(self.TITLE))
+
+        # NOUVEAU : Attente 2 : Attendre qu'au moins un élément du panier soit présent 
+        # Cela corrige l'erreur de dénombrement si le DOM est lent à charger.
+        self.wait.until(EC.presence_of_element_located(self.CART_ITEMS))
+
         # find_elements (au pluriel) retourne une liste d'éléments.
         return len(self.driver.find_elements(*self.CART_ITEMS))
 
