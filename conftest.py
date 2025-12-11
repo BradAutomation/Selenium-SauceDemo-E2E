@@ -33,6 +33,9 @@ def driver():
     chrome_options.add_argument("--disable-infobars")
     chrome_options.add_argument("--disable-features=PasswordManagerV2")
 
+    # ARGUMENT CRITIQUE POUR LES CONTENEURS ET CI
+    chrome_options.add_argument("--no-sandbox")  # <<< Ajoutez cette ligne
+
     # 3. Création du driver avec toutes les options configurées
     driver = webdriver.Chrome(
         # service=ChromeService(ChromeDriverManager().install()),
