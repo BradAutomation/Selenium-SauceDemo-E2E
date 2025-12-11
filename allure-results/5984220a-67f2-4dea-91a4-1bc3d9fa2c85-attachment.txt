@@ -1,0 +1,4 @@
+
+[SETUP] Démarrage du navigateur Chrome en mode Headless...
+
+[Wait Test] Le texte 'Hello World!' est apparu avec succès.

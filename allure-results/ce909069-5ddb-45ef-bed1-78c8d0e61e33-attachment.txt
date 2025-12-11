@@ -1,0 +1,9 @@
+Article 'Sac à Dos' ajouté au panier par force JavaScript.
+Article 'Bikelight' ajouté au panier par force JavaScript.
+
+[SauceDemo Test] Nombre d'articles dans le panier validé (2).
+[SauceDemo Test] Le Sac à Dos est bien listé.
+[SauceDemo Test] Informations de livraison soumises.
+[SauceDemo Test] Achat complet (E2E) validé avec succès!
+
+[TEARDOWN] Fermeture du navigateur...

@@ -1,0 +1,4 @@
+
+[CREATE] Ressource créée avec l'ID: 101
+[READ] Vérification du READ sur l'ID stable 1 réussie.
+[UPDATE] Titre mis à jour avec succès.

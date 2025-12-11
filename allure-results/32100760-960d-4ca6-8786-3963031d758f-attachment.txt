@@ -1,0 +1,5 @@
+
+--- Résultat du POST (Ressource Créée) ---
+{'title': 'Titre du Post de Bradley', 'body': 'Ceci est le corps du message créé par le test API.', 'userId': 101, 'id': 101}
+-------------------------------------------
+

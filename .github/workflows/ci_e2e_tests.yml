@@ -1,44 +1,50 @@
-# Nom du workflow qui apparaîtra sur GitHub
-name: Python Pytest CI
+name: E2E Tests (Dockerized)
 
-# Déclencheur : Quand ce workflow doit-il s'exécuter ?
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ] # Déclenche le workflow sur les push vers ces branches
   pull_request:
-    branches: [ main ]
+    branches: [ main, master ] # Déclenche également sur les Pull Requests
 
 jobs:
-  build:
-    runs-on: ubuntu-latest # Utilise un serveur Linux standard
-
+  run_e2e_tests:
+    runs-on: ubuntu-latest # Le runner est une machine Linux
+    
     steps:
-    # 1. Checkout: Récupérer le code du dépôt
-    - uses: actions/checkout@v4
     
-    # 2. Setup Python: Configurer l'environnement Python
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.9'
-    
-    # 3. Install Dependencies: Installer les librairies listées dans requirements.txt
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        
-    # 4. Install Chrome: Installer le navigateur Chrome sur le serveur Ubuntu
-    - name: Install Google Chrome Stable
-      uses: browser-actions/setup-chrome@latest
-        
-    # 5. Run Pytest: Exécuter le test Headless
-    - name: Run Pytest Tests (Headless)
-      run: |
-        pytest
+      # Étape 1: Cloner le code (nécessaire pour accéder au Dockerfile et au code)
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    # 5. Run Pytest: Exécuter le test Headless
-    - name: Run Pytest Tests (Headless)
-      run: |
-        pytest
+      # Étape 2: Installer l'outil Allure (pour la génération du rapport)
+      # Ceci est la manière la plus simple d'avoir la commande 'allure' disponible
+      - name: Install Allure CLI
+        uses: simple-elf/allure-report-action@master
+        with:
+          allure_history: allure-history
 
+      # Étape 3: Construire l'Image Docker
+      - name: Build Docker Image
+        # Ceci utilise votre Dockerfile à la racine du projet
+        run: docker build -t e2e-tests-image .
+
+      # Étape 4: Exécuter les tests Pytest DANS le conteneur
+      # On monte le volume pour que les résultats Allure soient accessibles au runner
+      - name: Run Dockerized Pytest and generate Allure data
+        run: |
+          docker run \
+            -v ${{ github.workspace }}/allure-results:/app/allure-results \
+            e2e-tests-image \
+            pytest --alluredir=allure-results
+
+      # Étape 5: Générer le rapport HTML Allure (sur le runner GitHub)
+      - name: Generate Allure Report
+        run: allure generate --clean allure-results -o allure-report
+
+      # Étape 6: Publier l'artefact (le rapport HTML)
+      # Le rapport est stocké et téléchargeable dans l'onglet 'Actions'
+      - name: Upload Allure Report Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: allure-report

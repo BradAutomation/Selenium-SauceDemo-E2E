@@ -1,0 +1,1 @@
+WARNING  selenium.webdriver.common.selenium_manager:selenium_manager.py:137 Cache folder (/home/seluser/.cache/selenium) cannot be created: Permission denied (os error 13)
