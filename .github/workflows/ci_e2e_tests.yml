@@ -28,21 +28,18 @@ jobs:
         # Ceci utilise votre Dockerfile à la racine du projet
         run: docker build -t e2e-tests-image .
 
-# Étape 4: Exécuter les tests Pytest DANS le conteneur
+      # Étape 4: Exécuter les tests Pytest DANS le conteneur
       - name: Run Dockerized Pytest and generate Allure data
         run: |
-          # Note: Exécuter en tant que root dans le conteneur pour assurer l'écriture,
-          # car Allure ne supporte pas toujours les permissions du seluser
-          docker run \
+          # Utiliser l'UID de l'utilisateur du runner pour écrire dans le volume monté.
+          docker run --user $(id -u):$(id -g) \
             -v ${{ github.workspace }}/allure-results:/app/allure-results \
             e2e-tests-image \
             pytest --alluredir=allure-results
 
-      # NOUVELLE ÉTAPE 4b: Corriger les permissions du dossier Allure
-      - name: Fix Allure results permissions
-        run: sudo chown -R runner:runner allure-results
-        # Le 'runner' est l'utilisateur par défaut dans GitHub Actions.
-        # Cela garantit que les étapes 5 et 6 peuvent lire le dossier.
+      # Supprimez l'étape de chown inutile, car l'utilisateur correct est utilisé maintenant.
+      # - name: Fix Allure results permissions
+      #   run: sudo chown -R runner:runner allure-results
 
       # Étape 5: Générer le rapport HTML Allure
       - name: Generate Allure Report
