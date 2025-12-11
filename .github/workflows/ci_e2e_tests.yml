@@ -36,11 +36,8 @@ jobs:
       # Étape 4: Exécuter les tests Pytest DANS le conteneur
       - name: Run Dockerized Pytest and generate Allure data
         run: |
-          # Ajout de --ipc=host pour résoudre les problèmes de démarrage de Chrome dans Docker CI
-          docker run --ipc=host \  # <<< NOUVEL ARGUMENT
-            -v ${{ github.workspace }}/allure-results:/app/allure-results \
-            e2e-tests-image \
-            pytest --alluredir=allure-results
+          # Commande simple sur une seule ligne pour éviter les erreurs de syntaxe
+          docker run --ipc=host -v ${{ github.workspace }}/allure-results:/app/allure-results e2e-tests-image pytest --alluredir=allure-results
 
       # Supprimez l'étape de chown inutile, car l'utilisateur correct est utilisé maintenant.
       # - name: Fix Allure results permissions
