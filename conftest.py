@@ -40,7 +40,7 @@ def driver():
     # NOUVEAU : Spécifier explicitement le chemin du navigateur Chrome (l'exécutable)
     # C'est souvent la clé si le driver démarre mais l'instance Chrome s'éteint immédiatement.
     # Si vous utilisez Chromium, remplacez '/usr/bin/google-chrome' par '/usr/bin/chromium'
-    chrome_options.binary_location = '/usr/bin/google-chrome'
+    chrome_options.binary_location = '/opt/google/chrome/google-chrome'
 
     # --- 2. CRÉATION DU DRIVER (Chemin confirmé) ---
 
