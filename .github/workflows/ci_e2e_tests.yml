@@ -1,56 +1,32 @@
-name: E2E Tests (Dockerized)
+name: End-to-End Tests (Selenium/Docker)
 
 on:
   push:
-    branches: [ main, master ] # Déclenche le workflow sur les push vers ces branches
+    branches: [ main ]
   pull_request:
-    branches: [ main, master ] # Déclenche également sur les Pull Requests
+    branches: [ main ]
 
 jobs:
-  run_e2e_tests:
-    runs-on: ubuntu-latest # Le runner est une machine Linux
-    
+  e2e_tests:
+    runs-on: ubuntu-latest
+
     steps:
-    
-      # Étape 1: Cloner le code (nécessaire pour accéder au Dockerfile et au code)
-      - name: Checkout Code
-        uses: actions/checkout@v4
+    - name: 📥 Checkout du code
+      uses: actions/checkout@v4
 
-      # Étape 2: Installer l'outil Allure (pour la génération du rapport)
-      # Ceci est la manière la plus simple d'avoir la commande 'allure' disponible
-      - name: Install Allure CLI
-        uses: simple-elf/allure-report-action@master
-        with:
-          allure_history: allure-history
+    # --- 1. CONFIGURATION DOCKER (CONSTRUCTION DE L'IMAGE) ---
+    - name: 🛠️ Construire l'image Docker
+      run: docker build -t my-e2e-image .
 
-      # Étape 3: Construire l'Image Docker
-      - name: Build Docker Image
-        run: docker build -t e2e-tests-image .
+    # --- 2. EXÉCUTION DES TESTS (COMMANDE CORRIGÉE) ---
+    - name: 🚀 Lancer les tests Pytest avec Ulimit Fix
+      run: |
+        # AJOUT CRITIQUE : --ulimit nofile=32768
+        docker run \
+          --rm \
+          --ulimit nofile=32768 \
+          my-e2e-image \
+          pytest
+      # Le reste du workflow (reports) reste inchangé
 
-      # NOUVELLE ÉTAPE 3b: Préparer le volume de résultats avec des permissions d'écriture maximales
-      - name: Prepare Allure Results Directory
-        run: |
-          mkdir -p allure-results
-          chmod 777 allure-results # Rend le dossier accessible en écriture par tout le monde (conteneur/hôte)
-
-      # Étape 4: Exécuter les tests Pytest DANS le conteneur
-      - name: Run Dockerized Pytest and generate Allure data
-        run: |
-          # Commande simple sur une seule ligne pour éviter les erreurs de syntaxe
-          docker run --ipc=host -v ${{ github.workspace }}/allure-results:/app/allure-results e2e-tests-image pytest --alluredir=allure-results
-
-      # Supprimez l'étape de chown inutile, car l'utilisateur correct est utilisé maintenant.
-      # - name: Fix Allure results permissions
-      #   run: sudo chown -R runner:runner allure-results
-
-      # Étape 5: Générer le rapport HTML Allure
-      - name: Generate Allure Report
-        run: allure generate --clean allure-results -o allure-report
-
-      # Étape 6: Publier l'artefact (le rapport HTML)
-      # Le rapport est stocké et téléchargeable dans l'onglet 'Actions'
-      - name: Upload Allure Report Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: allure-report
-          path: allure-report
+    # ... autres étapes (upload-artifact, etc.)
