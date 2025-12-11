@@ -20,7 +20,6 @@ def driver():
     chrome_options.add_argument("--headless=new")
 
     # 1.2. Arguments CRITIQUES pour les conteneurs Linux et les environnements CI
-    # Ces arguments sont CRUCIAUX pour le bon fonctionnement dans un conteneur restreint.
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--user-data-dir=/tmp/chrome-user-data")
@@ -38,10 +37,15 @@ def driver():
     }
     chrome_options.add_experimental_option("prefs", prefs)
 
+    # NOUVEAU : Spécifier explicitement le chemin du navigateur Chrome (l'exécutable)
+    # C'est souvent la clé si le driver démarre mais l'instance Chrome s'éteint immédiatement.
+    # Si vous utilisez Chromium, remplacez '/usr/bin/google-chrome' par '/usr/bin/chromium'
+    chrome_options.binary_location = '/usr/bin/google-chrome'
+
     # --- 2. CRÉATION DU DRIVER (Chemin confirmé) ---
 
     try:
-        # CHEMIN CONFIRMÉ PAR L'INSPECTION DOCKER
+        # CHEMIN CONFIRMÉ POUR LE DRIVER
         chrome_service = Service(executable_path='/usr/bin/chromedriver')
 
         driver = webdriver.Chrome(
@@ -50,9 +54,8 @@ def driver():
         )
 
     except Exception as e:
-        # Ceci ne devrait plus être atteint, car le chemin est correct.
         print(f"Erreur lors de l'initialisation du driver: {e}")
-        print("Le chemin est correct, mais une autre erreur empêche le démarrage de la session.")
+        print("Vérifiez l'alignement des versions Chrome/Driver et le chemin de binary_location.")
         raise
 
     # Configuration initiale du driver
